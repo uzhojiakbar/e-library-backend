@@ -1,0 +1,26 @@
+[
+  {
+    "name": "name",
+    "path": "files/books/Oliy matematika 1-qism_Sh.Xurramov.pdf",
+    "year": 2,
+    "muallif": "namel",
+    "nashriyot": "nash",
+    "ctg": "MMEdWfDOPK8IUPWemzHO",
+    "desc": "asd",
+    "pics": [],
+    "hidden": true,
+    "id": 2
+  },
+  {
+    "name": "name",
+    "path": "files/books/3book.pdf",
+    "year": 2,
+    "muallif": "namel",
+    "nashriyot": "nash",
+    "ctg": "MMEdWfDOPK8IUPWemzHO",
+    "desc": "asd",
+    "pics": [],
+    "hidden": true,
+    "id": 3
+  }
+]
