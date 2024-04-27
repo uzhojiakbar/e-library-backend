@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
+const path = require("path");
 
 const multer = require("multer");
 
@@ -18,8 +19,17 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
+const storagePic = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "files/pics/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
 
 const upload = multer({ storage: storage });
+const uploadPic = multer({ storage: storagePic });
 
 app.post("/books", (req, res) => {
   // console.log(req.body);
@@ -51,8 +61,17 @@ app.post("/books", (req, res) => {
   });
 });
 
+// app.get("/downloadFile/:filename", (req, res) => {
+//   const file = path.join(__dirname, "files/books", req.params.filename);
+//   res.download(file);
+// });
+
 app.post("/uploadFile", upload.single("file"), (req, res) => {
   res.send("Fayl muvaffaqiyatli yuklandi");
+});
+
+app.post("/uploadPic", uploadPic.single("image"), (req, res) => {
+  res.send("Surat muvaffaqiyatli yuklandi");
 });
 
 app.get("/books", (req, res) => {
