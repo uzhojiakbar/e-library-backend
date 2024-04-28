@@ -12,7 +12,24 @@
       "files/pics/3335.jpg",
       "files/pics/oliyMatematika1.jpg"
     ],
-    "hidden": true,
+    "hidden": false,
     "id": 1
+  },
+  {
+    "name": "opasi jilli",
+    "path": "files/books/1- tajriba ishi.docx",
+    "year": 2024,
+    "muallif": "gpt",
+    "nashriyot": "gpt nash-1",
+    "ctg": "MMEdWfDOPK8IUPWemzHO",
+    "desc": "opasi jili kitib oshinoa",
+    "tili": "gpt language",
+    "pics": [
+      "files/pics/Untitled (3).png",
+      "files/pics/Untitled (2).png",
+      "files/pics/hojiakbar_murodillayev_1713708054995.jpeg"
+    ],
+    "hidden": true,
+    "id": 2
   }
 ]

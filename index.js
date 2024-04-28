@@ -66,6 +66,18 @@ app.post("/books", (req, res) => {
 //   res.download(file);
 // });
 
+// app.use("/downloadImage/:filename", (req, res) => {
+//   const file = path.join(__dirname, "files/pics", req.params.filename);
+//   res.download(file);
+// });
+
+// app.use('/downloadImage', express.static(path.join(__dirname, 'files/pics')));
+// app.use('/downloadImage', express.static(path.join(__dirname, 'files', 'pics')));
+// app.use(express.static(path.join(__dirname, 'files', 'books')));
+app.use("/files/pics", express.static(path.join(__dirname, "files/pics")));
+
+
+
 app.post("/uploadFile", upload.single("file"), (req, res) => {
   res.send("Fayl muvaffaqiyatli yuklandi");
 });
@@ -84,6 +96,11 @@ app.get("/books", (req, res) => {
     res.json(JSON.parse(data));
     console.log(data);
   });
+});
+
+
+app.get("/", (req, res) => {
+  res.send(`<center><h1 style="color: red;">Welcome Ochiq Elektron Adabiyot Baza</h1></center>`)
 });
 
 app.listen(port, () => {
