@@ -1,12 +1,12 @@
 [
   {
-    "name": "name2",
+    "name": "Oliy matematika",
     "path": "files/books/Oliy matematika 1-qism_Sh.Xurramov.pdf",
     "year": 2,
-    "muallif": "namel",
-    "nashriyot": "nash",
+    "muallif": "Sh. Xurramov",
+    "nashriyot": "Nashtiyot nomi",
     "ctg": "MMEdWfDOPK8IUPWemzHO",
-    "desc": "asd",
+    "desc": "Ushbu kitob 1-kurslar uchun oliy matematika kitobi",
     "pics": [
       "files/pics/33.jpg",
       "files/pics/3335.jpg",
@@ -16,20 +16,37 @@
     "id": 1
   },
   {
-    "name": "opasi jilli",
-    "path": "files/books/1- tajriba ishi.docx",
-    "year": 2024,
-    "muallif": "gpt",
-    "nashriyot": "gpt nash-1",
+    "name": "Ot kishnagan oqshom",
+    "path": "files/books/Tog'ay Murod. Ot kishnagan oqshom (qissalar, 1994).pdf",
+    "year": 1977,
+    "muallif": "Togay Murod",
+    "nashriyot": "Gafur gulom nomidagi Adabiyot va sanat nashriyoti",
     "ctg": "MMEdWfDOPK8IUPWemzHO",
-    "desc": "opasi jili kitib oshinoa",
-    "tili": "gpt language",
+    "desc": "Togay Murod Ot kishnagan oqshom kiobi",
+    "tili": "o'zbek",
     "pics": [
-      "files/pics/Untitled (3).png",
-      "files/pics/Untitled (2).png",
-      "files/pics/hojiakbar_murodillayev_1713708054995.jpeg"
+      "files/pics/1.jpg",
+      "files/pics/12.jpg",
+      "files/pics/11.jpg"
     ],
     "hidden": true,
     "id": 2
+  },
+  {
+    "name": "Kafansiz komilganlar",
+    "path": "files/books/Shukrullo. Kafansiz ko'milganlar (roman).pdf",
+    "year": 2007,
+    "muallif": "Shukrullo",
+    "nashriyot": "Sharq Nashriyoti",
+    "ctg": "MMEdWfDOPK8IUPWemzHO",
+    "desc": "Shukrullo - Kafansiz komilganlar kitobi 2007-yilda chiqgan\n",
+    "tili": "o'zbek",
+    "pics": [
+      "files/pics/2.jpg",
+      "files/pics/21.jpg",
+      "files/pics/22.jpg"
+    ],
+    "hidden": true,
+    "id": 3
   }
 ]

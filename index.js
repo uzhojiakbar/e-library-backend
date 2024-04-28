@@ -121,7 +121,7 @@ app.get("/book/:id", (req, res) => {
 
 
 app.get("/", (req, res) => {
-  res.send(`<center><h1 style="color: red;">Welcome Ochiq Elektron Adabiyot Baza</h1></center>`)
+  res.send(`<center><h1 style="color: red;">Ochiq Elektron Adabiyot Baza</h1></center>`)
 });
 
 app.listen(port, () => {
