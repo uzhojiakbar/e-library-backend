@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
 const path = require("path");
+const url = require("url");
 
 const multer = require("multer");
 
@@ -76,6 +77,9 @@ app.post("/books", (req, res) => {
 // app.use(express.static(path.join(__dirname, 'files', 'books')));
 app.use("/files/pics", express.static(path.join(__dirname, "files/pics")));
 
+app.use("/files/books", express.static(path.join(__dirname, "files/books")));
+
+
 
 
 app.post("/uploadFile", upload.single("file"), (req, res) => {
@@ -94,7 +98,24 @@ app.get("/books", (req, res) => {
       return;
     }
     res.json(JSON.parse(data));
-    console.log(data);
+  });
+});
+
+app.get("/book/:id", (req, res) => {
+  fs.readFile("collection/books/books.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Server xatosi");
+      return;
+    }
+    const bookId = url.parse(req.url, true).pathname.slice(6);
+    var book = {}
+    JSON.parse(data).map((v) => {
+      if (v.id == bookId) {
+        book = v
+      }
+    })
+    res.json(book);
   });
 });
 
