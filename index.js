@@ -20,6 +20,7 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
+
 const storagePic = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "files/pics/");
@@ -79,9 +80,6 @@ app.use("/files/pics", express.static(path.join(__dirname, "files/pics")));
 
 app.use("/files/books", express.static(path.join(__dirname, "files/books")));
 
-
-
-
 app.post("/uploadFile", upload.single("file"), (req, res) => {
   res.send("Fayl muvaffaqiyatli yuklandi");
 });
@@ -109,19 +107,110 @@ app.get("/book/:id", (req, res) => {
       return;
     }
     const bookId = url.parse(req.url, true).pathname.slice(6);
-    var book = {}
+    var book = {};
     JSON.parse(data).map((v) => {
       if (v.id == bookId) {
-        book = v
+        book = v;
       }
-    })
+    });
     res.json(book);
   });
 });
 
+app.get("/categories", (req, res) => {
+  fs.readFile("collection/categories/categories.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Server xatosi");
+      return;
+    }
+    res.json(JSON.parse(data));
+  });
+});
+
+app.post("/categories", (req, res) => {
+  // console.log(req.body);
+  fs.readFile("collection/categories/categories.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Qandaydur xatolik");
+      return;
+    }
+    let ctg = [];
+    if (data) {
+      ctg = JSON.parse(data);
+    }
+
+    ctg.push({ id: ctg[ctg.length - 1].id + 1, ...req.body });
+    console.log(req.body);
+
+    fs.writeFile(
+      "collection/categories/categories.json",
+      JSON.stringify(ctg, null, 2),
+      (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Server xatosi");
+          return;
+        }
+        res.send("Ma'lumotlar saqlandi");
+      }
+    );
+  });
+});
+
+app.delete("/categories/:id", (req, res) => {
+  fs.readFile("collection/categories/categories.json", "utf8", (err, data) => {
+    if (err) {
+      console.error("Faylni o'qishda xatolik yuz berdi:", err);
+      res.status(500).send("Faylni o'qishda xatolik yuz berdi");
+      return;
+    }
+
+    let ctgs = JSON.parse(data);
+    const id = parseInt(req.params.id);
+    const index = ctgs.findIndex((ctg) => ctg.id === id);
+
+    if (index === -1) {
+      res.status(404).send("Bunday ID bilan kitob topilmadi");
+      return;
+    }
+
+    ctgs.splice(index, 1);
+
+    fs.writeFile(
+      "collection/categories/categories.json",
+      JSON.stringify(ctgs, null, 2),
+      (err) => {
+        if (err) {
+          console.error("Faylni yozishda xatolik yuz berdi:", err);
+          res.status(500).send("Faylni yozishda xatolik yuz berdi");
+          return;
+        }
+        console.log("Kitob muvaffaqiyatli o'chirildi");
+        res.send("Kitob muvaffaqiyatli o'chirildi");
+      }
+    );
+  });
+});
 
 app.get("/", (req, res) => {
-  res.send(`<center><h1 style="color: red;">Ochiq Elektron Adabiyot Baza</h1></center>`)
+  res.send(
+    `
+    <html>
+      <head>
+        <title>
+          backend => Ochiq elektron malumotlar bazasi 
+        </title>
+      </head>
+      <body>
+        <center><h1 style="color: red;">Ochiq Elektron Adabiyot Baza</h1></center>
+      </body>
+    </html>
+    
+    
+    `
+  );
 });
 
 app.listen(port, () => {
