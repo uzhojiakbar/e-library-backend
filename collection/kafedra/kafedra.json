@@ -3,6 +3,17 @@
     "id": 1,
     "name": "Axborot texnlagoiya tizimlari",
     "desc": "ATT uchun elektron kitoblar toplami...",
-    "fanlar": []
+    "fanlar": [
+      {
+        "id": 1,
+        "name": "Matematika",
+        "books": [1, 2]
+      },
+      {
+        "id": 2,
+        "name": "ALgoritmik tillar",
+        "books": [1, 3]
+      }
+    ]
   }
 ]

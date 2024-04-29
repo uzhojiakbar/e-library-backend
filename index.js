@@ -231,6 +231,34 @@ app.get("/kafedra", (req, res) => {
   });
 });
 
+const findBookById = (id) => {
+  const bookData = fs.readFileSync("collection/books/books.json", "utf8");
+  const books = JSON.parse(bookData);
+  return books.find((book) => book.id === id);
+};
+
+app.get("/kafedra/:id", (req, res) => {
+  fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Server xatosi");
+      return;
+    }
+    let kafedralar = JSON.parse(data);
+    const id = parseInt(req.params.id);
+    const index = kafedralar.findIndex((kaf) => kaf.id === id);
+    var kafedra = kafedralar[index];
+
+    kafedra.fanlar.forEach((fan) => {
+      fan.books = fan.books.map((bookId) => {
+        return findBookById(bookId); // Assuming you have a findBookById function
+      });
+    });
+
+    res.json(kafedra);
+  });
+});
+
 app.post("/kafedra", (req, res) => {
   fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
     if (err) {
