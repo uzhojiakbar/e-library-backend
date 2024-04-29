@@ -218,7 +218,50 @@ app.delete("/categories/:id", (req, res) => {
   });
 });
 
-// TOPLAM
+// * KAFEDRA (Toplam)
+
+app.get("/kafedra", (req, res) => {
+  fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Server xatosi");
+      return;
+    }
+    res.json(JSON.parse(data));
+  });
+});
+
+app.post("/kafedra", (req, res) => {
+  fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Qandaydur xatolik");
+      return;
+    }
+    let kafedra = [];
+    if (data) {
+      kafedra = JSON.parse(data);
+    }
+    const newId = kafedra.length > 0 ? kafedra[kafedra.length - 1].id + 1 : 1;
+
+    kafedra.push({ id: newId, ...req.body });
+    console.log(kafedra);
+    console.log(req.body);
+
+    fs.writeFile(
+      "collection/kafedra/kafedra.json",
+      JSON.stringify(kafedra, null, 2),
+      (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Server xatosi");
+          return;
+        }
+        res.send("Ma'lumotlar saqlandi");
+      }
+    );
+  });
+});
 
 // *DEFAULT
 app.get("/", (req, res) => {
