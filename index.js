@@ -88,6 +88,38 @@ app.post("/books", (req, res) => {
   });
 });
 
+app.put("/books/:id", (req, res) => {
+  fs.readFile("collection/books/books.json", "utf8", (err, data) => {
+    if (err) {
+      console.error("Faylni o'qishda xatolik yuz berdi:", err);
+      res.status(500).send("Faylni o'qishda xatolik yuz berdi");
+      return;
+    }
+
+    let books = JSON.parse(data);
+    const id = parseInt(req.params.id);
+    const index = books.findIndex((book) => book.id === id);
+
+    let res = { ...books[index], ...req.body };
+    books[index] = res;
+    console.log(books);
+
+    fs.writeFile(
+      "collection/books/books.json",
+      JSON.stringify(books, null, 2),
+      (err) => {
+        if (err) {
+          console.error("Faylni yozishda xatolik yuz berdi:", err);
+          res.status(500).send("Faylni yozishda xatolik yuz berdi");
+          return;
+        }
+        console.log("Kitob muvaffaqiyatli yangilandi");
+        res.send("Kitob muvaffaqiyatli o'yangilandi");
+      }
+    );
+  });
+});
+
 app.get("/book/:id", (req, res) => {
   fs.readFile("collection/books/books.json", "utf8", (err, data) => {
     if (err) {
@@ -185,6 +217,8 @@ app.delete("/categories/:id", (req, res) => {
     );
   });
 });
+
+// TOPLAM
 
 // *DEFAULT
 app.get("/", (req, res) => {
