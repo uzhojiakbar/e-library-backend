@@ -12,6 +12,7 @@ const port = 3030;
 app.use(express.json());
 app.use(cors());
 
+// STORAGE FOR BOOKS
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "files/books/");
@@ -21,6 +22,7 @@ const storage = multer.diskStorage({
   },
 });
 
+// STORAGE FOR PICS
 const storagePic = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "files/pics/");
@@ -32,6 +34,29 @@ const storagePic = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 const uploadPic = multer({ storage: storagePic });
+
+// *FILES
+app.use("/files/pics", express.static(path.join(__dirname, "files/pics")));
+
+app.post("/uploadFile", upload.single("file"), (req, res) => {
+  res.send("Fayl muvaffaqiyatli yuklandi");
+});
+
+app.post("/uploadPic", uploadPic.single("image"), (req, res) => {
+  res.send("Surat muvaffaqiyatli yuklandi");
+});
+
+// *BOOKS
+app.get("/books", (req, res) => {
+  fs.readFile("collection/books/books.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Server xatosi");
+      return;
+    }
+    res.json(JSON.parse(data));
+  });
+});
 
 app.post("/books", (req, res) => {
   // console.log(req.body);
@@ -63,42 +88,6 @@ app.post("/books", (req, res) => {
   });
 });
 
-// app.get("/downloadFile/:filename", (req, res) => {
-//   const file = path.join(__dirname, "files/books", req.params.filename);
-//   res.download(file);
-// });
-
-// app.use("/downloadImage/:filename", (req, res) => {
-//   const file = path.join(__dirname, "files/pics", req.params.filename);
-//   res.download(file);
-// });
-
-// app.use('/downloadImage', express.static(path.join(__dirname, 'files/pics')));
-// app.use('/downloadImage', express.static(path.join(__dirname, 'files', 'pics')));
-// app.use(express.static(path.join(__dirname, 'files', 'books')));
-app.use("/files/pics", express.static(path.join(__dirname, "files/pics")));
-
-app.use("/files/books", express.static(path.join(__dirname, "files/books")));
-
-app.post("/uploadFile", upload.single("file"), (req, res) => {
-  res.send("Fayl muvaffaqiyatli yuklandi");
-});
-
-app.post("/uploadPic", uploadPic.single("image"), (req, res) => {
-  res.send("Surat muvaffaqiyatli yuklandi");
-});
-
-app.get("/books", (req, res) => {
-  fs.readFile("collection/books/books.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Server xatosi");
-      return;
-    }
-    res.json(JSON.parse(data));
-  });
-});
-
 app.get("/book/:id", (req, res) => {
   fs.readFile("collection/books/books.json", "utf8", (err, data) => {
     if (err) {
@@ -117,6 +106,9 @@ app.get("/book/:id", (req, res) => {
   });
 });
 
+app.use("/files/books", express.static(path.join(__dirname, "files/books")));
+
+// *CATEGORY
 app.get("/categories", (req, res) => {
   fs.readFile("collection/categories/categories.json", "utf8", (err, data) => {
     if (err) {
@@ -194,6 +186,7 @@ app.delete("/categories/:id", (req, res) => {
   });
 });
 
+// *DEFAULT
 app.get("/", (req, res) => {
   res.send(
     `
