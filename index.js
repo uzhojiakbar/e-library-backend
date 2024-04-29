@@ -290,6 +290,54 @@ app.post("/kafedra", (req, res) => {
     );
   });
 });
+app.post("/kafedra/:kafedraId", (req, res) => {
+  const kafedraId = parseInt(req.params.kafedraId);
+  const { name, books } = req.body;
+
+  fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send("Qandaydur xatolik");
+      return;
+    }
+    let kafedra = [];
+    if (data) {
+      kafedra = JSON.parse(data);
+    }
+
+    const fanlar = kafedra.find((k) => k.id === kafedraId)?.fanlar || [];
+    const newFanId = fanlar.length > 0 ? fanlar[fanlar.length - 1].id + 1 : 1;
+
+    const newFan = {
+      id: newFanId,
+      name,
+      books,
+    };
+
+    kafedra = kafedra.map((k) => {
+      if (k.id === kafedraId) {
+        return {
+          ...k,
+          fanlar: [...k.fanlar, newFan],
+        };
+      }
+      return k;
+    });
+
+    fs.writeFile(
+      "collection/kafedra/kafedra.json",
+      JSON.stringify(kafedra, null, 2),
+      (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Server xatosi");
+          return;
+        }
+        res.send("Ma'lumotlar saqlandi");
+      }
+    );
+  });
+});
 
 // *DEFAULT
 app.get("/", (req, res) => {
