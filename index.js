@@ -7,7 +7,7 @@ const url = require("url");
 const multer = require("multer");
 
 const app = express();
-const port = 3030;
+const port = 3000;
 
 app.use(express.json());
 app.use(cors());
@@ -220,7 +220,7 @@ app.delete("/categories/:id", (req, res) => {
 
 // * KAFEDRA (Toplam)
 
-app.get("/kafedra", (req, res) => {
+app.get("/toplam", (req, res) => {
   fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
     if (err) {
       console.error(err);
@@ -237,7 +237,7 @@ const findBookById = (id) => {
   return books.find((book) => book.id === id);
 };
 
-app.get("/kafedra/:id", (req, res) => {
+app.get("/toplam/:kafedraId", (req, res) => {
   fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
     if (err) {
       console.error(err);
@@ -245,7 +245,7 @@ app.get("/kafedra/:id", (req, res) => {
       return;
     }
     let kafedralar = JSON.parse(data);
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.kafedraId);
     const index = kafedralar.findIndex((kaf) => kaf.id === id);
     var kafedra = kafedralar[index];
 
@@ -259,7 +259,7 @@ app.get("/kafedra/:id", (req, res) => {
   });
 });
 
-app.post("/kafedra", (req, res) => {
+app.post("/toplam", (req, res) => {
   fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
     if (err) {
       console.error(err);
@@ -290,7 +290,7 @@ app.post("/kafedra", (req, res) => {
     );
   });
 });
-app.post("/kafedra/:kafedraId", (req, res) => {
+app.post("/toplam/:kafedraId", (req, res) => {
   const kafedraId = parseInt(req.params.kafedraId);
   const { name, books } = req.body;
 
