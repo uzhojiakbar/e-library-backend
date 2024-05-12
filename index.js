@@ -1,9 +1,8 @@
 const express = require("express");
-const fs = require("fs");
+const fs = require("fs").promises; // fs modulini promise qilamiz
 const cors = require("cors");
 const path = require("path");
 const url = require("url");
-
 const multer = require("multer");
 
 const app = express();
@@ -38,6 +37,63 @@ const uploadPic = multer({ storage: storagePic });
 // *FILES
 app.use("/files/pics", express.static(path.join(__dirname, "files/pics")));
 
+async function readData(filePath) {
+  try {
+    const data = await fs.readFile(filePath, "utf8");
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`Faylni o'qishda xatolik yuz berdi: ${error}`);
+    return [];
+  }
+}
+
+async function writeData(filePath, data) {
+  try {
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+    console.log("Ma'lumotlar saqlandi");
+  } catch (error) {
+    console.error(`Faylni yozishda xatolik yuz berdi: ${error}`);
+  }
+}
+
+async function findBookById(id) {
+  try {
+    const bookData = await fs.readFile("collection/books/books.json", "utf8");
+    const books = JSON.parse(bookData);
+    return books.find((book) => book.id === id);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+async function deleteFanFromKafedra(kafedraId, fanId) {
+  try {
+    let kafedralar = await readData("collection/kafedra/kafedra.json");
+    const kafedraIndex = kafedralar.findIndex((k) => k.id === kafedraId);
+
+    if (kafedraIndex === -1) {
+      throw new Error("Bunday ID bilan kafedra topilmadi");
+    }
+
+    const fanlar = kafedralar[kafedraIndex].fanlar;
+    const fanIndex = fanlar.findIndex((f) => f.id === fanId);
+
+    if (fanIndex === -1) {
+      throw new Error("Bunday ID bilan fan topilmadi");
+    }
+
+    fanlar.splice(fanIndex, 1);
+
+    await writeData("collection/kafedra/kafedra.json", kafedralar);
+    console.log("Fan muvaffaqiyatli o'chirildi");
+    return "Fan muvaffaqiyatli o'chirildi";
+  } catch (error) {
+    console.error(`Fan o'chirishda xatolik yuz berdi: ${error.message}`);
+    throw error;
+  }
+}
+
 app.post("/uploadFile", upload.single("file"), (req, res) => {
   res.send("Fayl muvaffaqiyatli yuklandi");
 });
@@ -47,296 +103,188 @@ app.post("/uploadPic", uploadPic.single("image"), (req, res) => {
 });
 
 // *BOOKS
-app.get("/books", (req, res) => {
-  fs.readFile("collection/books/books.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Server xatosi");
-      return;
-    }
-    res.json(JSON.parse(data));
-  });
+app.get("/books", async (req, res) => {
+  const data = await readData("collection/books/books.json");
+  res.json(data);
 });
 
-app.post("/books", (req, res) => {
-  // console.log(req.body);
-  fs.readFile("collection/books/books.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Qandaydur xatolik");
-      return;
-    }
-    let books = [];
-    if (data) {
-      books = JSON.parse(data);
-    }
-
-    books.push({ ...req.body, id: books[books.length - 1].id + 1 });
-
-    fs.writeFile(
-      "collection/books/books.json",
-      JSON.stringify(books, null, 2),
-      (err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Server xatosi");
-          return;
-        }
-        res.send("Ma'lumotlar saqlandi");
-      }
-    );
-  });
+app.post("/books", async (req, res) => {
+  try {
+    const books = await readData("collection/books/books.json");
+    const newBook = { ...req.body, id: books.length + 1 };
+    books.push(newBook);
+    await writeData("collection/books/books.json", books);
+    res.send("Ma'lumotlar saqlandi");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
 });
 
-app.put("/books/:id", (req, res) => {
-  fs.readFile("collection/books/books.json", "utf8", (err, data) => {
-    if (err) {
-      console.error("Faylni o'qishda xatolik yuz berdi:", err);
-      res.status(500).send("Faylni o'qishda xatolik yuz berdi");
-      return;
-    }
-
-    let books = JSON.parse(data);
+app.put("/books/:id", async (req, res) => {
+  try {
+    const books = await readData("collection/books/books.json");
     const id = parseInt(req.params.id);
     const index = books.findIndex((book) => book.id === id);
-
-    let res = { ...books[index], ...req.body };
-    books[index] = res;
-    console.log(books);
-
-    fs.writeFile(
-      "collection/books/books.json",
-      JSON.stringify(books, null, 2),
-      (err) => {
-        if (err) {
-          console.error("Faylni yozishda xatolik yuz berdi:", err);
-          res.status(500).send("Faylni yozishda xatolik yuz berdi");
-          return;
-        }
-        console.log("Kitob muvaffaqiyatli yangilandi");
-        res.send("Kitob muvaffaqiyatli o'yangilandi");
-      }
-    );
-  });
-});
-
-app.get("/book/:id", (req, res) => {
-  fs.readFile("collection/books/books.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Server xatosi");
-      return;
-    }
-    const bookId = url.parse(req.url, true).pathname.slice(6);
-    var book = {};
-    JSON.parse(data).map((v) => {
-      if (v.id == bookId) {
-        book = v;
-      }
-    });
-    res.json(book);
-  });
-});
-
-app.use("/files/books", express.static(path.join(__dirname, "files/books")));
-
-// *CATEGORY
-app.get("/categories", (req, res) => {
-  fs.readFile("collection/categories/categories.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Server xatosi");
-      return;
-    }
-    res.json(JSON.parse(data));
-  });
-});
-
-app.post("/categories", (req, res) => {
-  // console.log(req.body);
-  fs.readFile("collection/categories/categories.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Qandaydur xatolik");
-      return;
-    }
-    let ctg = [];
-    if (data) {
-      ctg = JSON.parse(data);
-    }
-
-    ctg.push({ id: ctg[ctg.length - 1].id + 1, ...req.body });
-    console.log(req.body);
-
-    fs.writeFile(
-      "collection/categories/categories.json",
-      JSON.stringify(ctg, null, 2),
-      (err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Server xatosi");
-          return;
-        }
-        res.send("Ma'lumotlar saqlandi");
-      }
-    );
-  });
-});
-
-app.delete("/categories/:id", (req, res) => {
-  fs.readFile("collection/categories/categories.json", "utf8", (err, data) => {
-    if (err) {
-      console.error("Faylni o'qishda xatolik yuz berdi:", err);
-      res.status(500).send("Faylni o'qishda xatolik yuz berdi");
-      return;
-    }
-
-    let ctgs = JSON.parse(data);
-    const id = parseInt(req.params.id);
-    const index = ctgs.findIndex((ctg) => ctg.id === id);
 
     if (index === -1) {
       res.status(404).send("Bunday ID bilan kitob topilmadi");
       return;
     }
 
-    ctgs.splice(index, 1);
+    books[index] = { ...books[index], ...req.body };
+    await writeData("collection/books/books.json", books);
+    console.log("Kitob muvaffaqiyatli yangilandi");
+    res.send("Kitob muvaffaqiyatli o'yangilandi");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
+});
 
-    fs.writeFile(
-      "collection/categories/categories.json",
-      JSON.stringify(ctgs, null, 2),
-      (err) => {
-        if (err) {
-          console.error("Faylni yozishda xatolik yuz berdi:", err);
-          res.status(500).send("Faylni yozishda xatolik yuz berdi");
-          return;
-        }
-        console.log("Kitob muvaffaqiyatli o'chirildi");
-        res.send("Kitob muvaffaqiyatli o'chirildi");
-      }
-    );
-  });
+app.get("/book/:id", async (req, res) => {
+  try {
+    const data = await readData("collection/books/books.json");
+    const bookId = parseInt(req.params.id);
+    const book = data.find((book) => book.id === bookId);
+    res.json(book);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
+});
+
+app.use("/files/books", express.static(path.join(__dirname, "files/books")));
+
+// *CATEGORY
+app.get("/categories", async (req, res) => {
+  const data = await readData("collection/categories/categories.json");
+  res.json(data);
+});
+
+app.post("/categories", async (req, res) => {
+  try {
+    const categories = await readData("collection/categories/categories.json");
+    const newCategory = { id: categories.length + 1, ...req.body };
+    categories.push(newCategory);
+    await writeData("collection/categories/categories.json", categories);
+    res.send("Ma'lumotlar saqlandi");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
+});
+
+app.delete("/categories/:id", async (req, res) => {
+  try {
+    const categories = await readData("collection/categories/categories.json");
+    const id = parseInt(req.params.id);
+    const index = categories.findIndex((category) => category.id === id);
+
+    if (index === -1) {
+      res.status(404).send("Bunday ID bilan kategoriya topilmadi");
+      return;
+    }
+
+    categories.splice(index, 1);
+    await writeData("collection/categories/categories.json", categories);
+    console.log("Kategoriya muvaffaqiyatli o'chirildi");
+    res.send("Kategoriya muvaffaqiyatli o'chirildi");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
 });
 
 // * KAFEDRA (Toplam)
-
-app.get("/toplam", (req, res) => {
-  fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Server xatosi");
-      return;
-    }
-    res.json(JSON.parse(data));
-  });
+app.get("/toplam", async (req, res) => {
+  const data = await readData("collection/kafedra/kafedra.json");
+  res.json(data);
 });
 
-const findBookById = (id) => {
-  const bookData = fs.readFileSync("collection/books/books.json", "utf8");
-  const books = JSON.parse(bookData);
-  return books.find((book) => book.id === id);
-};
+app.get("/toplam/:kafedraId", async (req, res) => {
+  try {
+    const kafedraId = parseInt(req.params.kafedraId);
+    const kafedralar = await readData("collection/kafedra/kafedra.json");
+    const kafedra = kafedralar.find((k) => k.id === kafedraId);
 
-app.get("/toplam/:kafedraId", (req, res) => {
-  fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Server xatosi");
+    if (!kafedra) {
+      res.status(404).send("Bunday ID bilan kafedra topilmadi");
       return;
     }
-    let kafedralar = JSON.parse(data);
-    const id = parseInt(req.params.kafedraId);
-    const index = kafedralar.findIndex((kaf) => kaf.id === id);
-    var kafedra = kafedralar[index];
 
-    kafedra.fanlar.forEach((fan) => {
-      fan.books = fan.books.map((bookId) => {
-        return findBookById(bookId); // Assuming you have a findBookById function
-      });
-    });
+    for (let i = 0; i < kafedra.fanlar.length; i++) {
+      for (let j = 0; j < kafedra.fanlar[i].books.length; j++) {
+        const bookId = kafedra.fanlar[i].books[j];
+        const book = await findBookById(bookId);
+        kafedra.fanlar[i].books[j] = book;
+      }
+    }
 
     res.json(kafedra);
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
 });
 
-app.post("/toplam", (req, res) => {
-  fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Qandaydur xatolik");
+app.post("/toplam", async (req, res) => {
+  try {
+    const kafedralar = await readData("collection/kafedra/kafedra.json");
+    const newId =
+      kafedralar.length > 0 ? kafedralar[kafedralar.length - 1].id + 1 : 1;
+    const newKafedra = { id: newId, ...req.body };
+    kafedralar.push(newKafedra);
+    await writeData("collection/kafedra/kafedra.json", kafedralar);
+    res.send("Ma'lumotlar saqlandi");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
+});
+
+app.post("/toplam/:kafedraId", async (req, res) => {
+  try {
+    const kafedraId = parseInt(req.params.kafedraId);
+    const { name, books } = req.body;
+
+    const kafedralar = await readData("collection/kafedra/kafedra.json");
+    const kafedraIndex = kafedralar.findIndex((k) => k.id === kafedraId);
+
+    if (kafedraIndex === -1) {
+      res.status(404).send("Bunday ID bilan kafedra topilmadi");
       return;
     }
-    let kafedra = [];
-    if (data) {
-      kafedra = JSON.parse(data);
-    }
-    const newId = kafedra.length > 0 ? kafedra[kafedra.length - 1].id + 1 : 1;
 
-    kafedra.push({ id: newId, ...req.body });
-    console.log(kafedra);
-    console.log(req.body);
+    const newFanId =
+      kafedralar[kafedraIndex].fanlar.length > 0
+        ? kafedralar[kafedraIndex].fanlar[
+            kafedralar[kafedraIndex].fanlar.length - 1
+          ].id + 1
+        : 1;
 
-    fs.writeFile(
-      "collection/kafedra/kafedra.json",
-      JSON.stringify(kafedra, null, 2),
-      (err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Server xatosi");
-          return;
-        }
-        res.send("Ma'lumotlar saqlandi");
-      }
-    );
-  });
+    const newFan = { id: newFanId, name, books };
+    kafedralar[kafedraIndex].fanlar.push(newFan);
+
+    await writeData("collection/kafedra/kafedra.json", kafedralar);
+    res.send("Ma'lumotlar saqlandi");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
 });
-app.post("/toplam/:kafedraId", (req, res) => {
+
+// Kafedra ichidagi fanlardan birortasini ochirish
+app.delete("/toplam/:kafedraId/:fanId", async (req, res) => {
   const kafedraId = parseInt(req.params.kafedraId);
-  const { name, books } = req.body;
+  const fanId = parseInt(req.params.fanId);
 
-  fs.readFile("collection/kafedra/kafedra.json", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Qandaydur xatolik");
-      return;
-    }
-    let kafedra = [];
-    if (data) {
-      kafedra = JSON.parse(data);
-    }
-
-    const fanlar = kafedra.find((k) => k.id === kafedraId)?.fanlar || [];
-    const newFanId = fanlar.length > 0 ? fanlar[fanlar.length - 1].id + 1 : 1;
-
-    const newFan = {
-      id: newFanId,
-      name,
-      books,
-    };
-
-    kafedra = kafedra.map((k) => {
-      if (k.id === kafedraId) {
-        return {
-          ...k,
-          fanlar: [...k.fanlar, newFan],
-        };
-      }
-      return k;
-    });
-
-    fs.writeFile(
-      "collection/kafedra/kafedra.json",
-      JSON.stringify(kafedra, null, 2),
-      (err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Server xatosi");
-          return;
-        }
-        res.send("Ma'lumotlar saqlandi");
-      }
-    );
-  });
+  try {
+    await deleteFanFromKafedra(kafedraId, fanId);
+    res.send("Fan muvaffaqiyatli o'chirildi");
+  } catch (error) {
+    res.status(500).send("Fan o'chirishda xatolik yuz berdi");
+  }
 });
 
 // *DEFAULT
@@ -353,8 +301,6 @@ app.get("/", (req, res) => {
         <center><h1 style="color: red;">Ochiq Elektron Adabiyot Baza</h1></center>
       </body>
     </html>
-    
-    
     `
   );
 });

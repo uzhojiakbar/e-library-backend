@@ -14,39 +14,5 @@
     ],
     "hidden": false,
     "id": 1
-  },
-  {
-    "name": "Ot kishnagan oqshom",
-    "path": "files/books/Tog'ay Murod. Ot kishnagan oqshom (qissalar, 1994).pdf",
-    "year": 1977,
-    "muallif": "Togay Murod",
-    "nashriyot": "Gafur gulom nomidagi Adabiyot va sanat nashriyoti",
-    "ctg": "MMEdWfDOPK8IUPWemzHO",
-    "desc": "Togay Murod Ot kishnagan oqshom kiobi",
-    "tili": "o'zbek",
-    "pics": [
-      "files/pics/1.jpg",
-      "files/pics/12.jpg",
-      "files/pics/11.jpg"
-    ],
-    "hidden": true,
-    "id": 2
-  },
-  {
-    "name": "Kafansiz komilganlar",
-    "path": "files/books/Shukrullo. Kafansiz ko'milganlar (roman).pdf",
-    "year": 2007,
-    "muallif": "Shukrullo",
-    "nashriyot": "Sharq Nashriyoti",
-    "ctg": "MMEdWfDOPK8IUPWemzHO",
-    "desc": "Shukrullo - Kafansiz komilganlar kitobi 2007-yilda chiqgan\n",
-    "tili": "o'zbek",
-    "pics": [
-      "files/pics/2.jpg",
-      "files/pics/21.jpg",
-      "files/pics/22.jpg"
-    ],
-    "hidden": false,
-    "id": 3
   }
 ]
