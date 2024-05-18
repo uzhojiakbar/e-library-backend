@@ -266,6 +266,27 @@ app.delete("/toplam/:kafedraId", async (req, res) => {
   }
 });
 
+// Kafedrani tahrirlash
+app.put("/toplam/:kafedraId", async (req, res) => {
+  const kafedraId = parseInt(req.params.kafedraId);
+  const kafedraData = await readData("collection/kafedra/kafedra.json");
+  const kafedraIndex = kafedraData.findIndex((kaf) => kaf.id === kafedraId);
+
+  if (kafedraIndex === -1) {
+    throw new Error("Kafedra topilmadi");
+  }
+  const { name, desc } = req.body;
+
+  try {
+    kafedraData[kafedraIndex].name = name;
+    kafedraData[kafedraIndex].desc = desc;
+    writeData("collection/kafedra/kafedra.json", kafedraData);
+  } catch (error) {}
+
+  console.log(kafedraData);
+  res.json(kafedraData[kafedraIndex]);
+});
+
 // Fan qoshish
 app.post("/toplam/:kafedraId", async (req, res) => {
   try {

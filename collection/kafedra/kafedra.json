@@ -1,8 +1,16 @@
 [
   {
     "id": 1,
-    "name": "36-ATT-23 ",
-    "desc": "1-kurs Axborot texnalogiya tizimlari fakulteti uchun kitoblar toplami\n",
-    "fanlar": []
+    "name": "34-36-ATT-23",
+    "desc": "1-kurs Ahborot texnalogiya tizimlari fakulteti talabalari uchun kitoblar to'plami",
+    "fanlar": [
+      {
+        "id": 1,
+        "name": "Oliy Matematika",
+        "books": [
+          1
+        ]
+      }
+    ]
   }
 ]
