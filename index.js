@@ -158,8 +158,13 @@ app.use("/files/books", express.static(path.join(__dirname, "files/books")));
 
 // *CATEGORY
 app.get("/categories", async (req, res) => {
-  const data = await readData("collection/categories/categories.json");
-  res.json(data);
+  try {
+    const categories = await readData("collection/categories/categories.json");
+    res.json(categories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server xatosi");
+  }
 });
 
 app.post("/categories", async (req, res) => {
@@ -168,7 +173,7 @@ app.post("/categories", async (req, res) => {
     const newCategory = { id: categories.length + 1, ...req.body };
     categories.push(newCategory);
     await writeData("collection/categories/categories.json", categories);
-    res.send("Ma'lumotlar saqlandi");
+    res.status(201).json(newCategory);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server xatosi");

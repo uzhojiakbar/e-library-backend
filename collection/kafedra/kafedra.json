@@ -6,18 +6,29 @@
     "fanlar": [
       {
         "id": 1,
-        "name": "Test uchun fan 1",
-        "books": [
-          1
-        ]
-      },
-      {
-        "id": 2,
-        "name": "fan 2",
+        "name": "Matematik",
         "books": [
           1
         ]
       }
     ]
+  },
+  {
+    "id": 2,
+    "name": "1",
+    "desc": "1",
+    "fanlar": []
+  },
+  {
+    "id": 3,
+    "name": "111",
+    "desc": "1111111111",
+    "fanlar": []
+  },
+  {
+    "id": 4,
+    "name": "1",
+    "desc": "1212",
+    "fanlar": []
   }
 ]

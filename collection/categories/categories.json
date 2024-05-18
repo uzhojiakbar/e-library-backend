@@ -1,18 +1,10 @@
 [
   {
-    "id": 9999,
-    "name": "Boshqa"
-  },
-  {
     "id": 1,
-    "name": "Darslik"
+    "name": "test"
   },
   {
     "id": 2,
-    "name": "Dars qo'llanma"
-  },
-  {
-    "id": 3,
-    "name": "Ijodiy ish"
+    "name": "bir"
   }
 ]
