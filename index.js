@@ -248,6 +248,25 @@ app.post("/toplam", async (req, res) => {
   }
 });
 
+// Kafedrani ochirish
+app.delete("/toplam/:kafedraId", async (req, res) => {
+  const kafedraId = parseInt(req.params.kafedraId);
+  const kafedraData = await readData("collection/kafedra/kafedra.json");
+  const kafedraIndex = kafedraData.findIndex((kaf) => kaf.id === kafedraId);
+
+  if (kafedraIndex === -1) {
+    throw new Error("Kafedra topilmadi");
+  }
+  try {
+    kafedraData.splice(kafedraIndex, 1)[0];
+    writeData("collection/kafedra/kafedra.json", kafedraData);
+    res.send("Kafedra muvaffaqiyatli o'chirildi");
+  } catch (error) {
+    res.status(500).send("Kafedra o'chirishda xatolik yuz berdi");
+  }
+});
+
+// Fan qoshish
 app.post("/toplam/:kafedraId", async (req, res) => {
   try {
     const kafedraId = parseInt(req.params.kafedraId);

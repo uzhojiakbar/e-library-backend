@@ -1,34 +1,8 @@
 [
   {
     "id": 1,
-    "name": "Test uchun Kafedra",
-    "desc": "Test uchun Kafedra ",
-    "fanlar": [
-      {
-        "id": 1,
-        "name": "Matematik",
-        "books": [
-          1
-        ]
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "name": "1",
-    "desc": "1",
-    "fanlar": []
-  },
-  {
-    "id": 3,
-    "name": "111",
-    "desc": "1111111111",
-    "fanlar": []
-  },
-  {
-    "id": 4,
-    "name": "1",
-    "desc": "1212",
+    "name": "36-ATT-23 ",
+    "desc": "1-kurs Axborot texnalogiya tizimlari fakulteti uchun kitoblar toplami\n",
     "fanlar": []
   }
 ]
