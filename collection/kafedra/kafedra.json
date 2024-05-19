@@ -7,9 +7,12 @@
       {
         "id": 1,
         "name": "Oliy Matematika",
-        "books": [
-          1
-        ]
+        "books": [1]
+      },
+      {
+        "id": 2,
+        "name": "Ingliz tili",
+        "books": [2]
       }
     ]
   }

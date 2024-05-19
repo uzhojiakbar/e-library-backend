@@ -14,5 +14,22 @@
     ],
     "hidden": false,
     "id": 1
+  },
+  {
+    "name": "grammarway 1",
+    "path": "files/books/grammarway-1.pdf",
+    "year": 2006,
+    "muallif": "Jenny Dooley Virgina Evens",
+    "nashriyot": "Express Publishing",
+    "ctg": "",
+    "desc": "Made In Ue",
+    "tili": "Ingliz tili",
+    "pics": [
+      "files/pics/1.webp",
+      "files/pics/2.webp",
+      "files/pics/3.jpg"
+    ],
+    "hidden": false,
+    "id": 2
   }
 ]
